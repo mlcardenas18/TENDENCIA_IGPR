@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Tendencia IGPR</title>
+    </head>
+ <body>
+<h1>Como vamos con el índice de gestión de proyectos? </h1>
+<div class = a >
+  <h3>Promedio Nacional</h3>
+  <p>This is a paragraph.</p>
+
+<table style="width:100%" border=1>
+   <tr>
+       <th>
+           Promedio Nacional
+       </th>
+       <th>
+           Promedio Nacional por Categorias
+       </th>
+    </tr> 
+    <tr>
+        <td>
+            <svg class = c width="350" height="250"></svg>     
+        </td>
+        <td>
+            <svg class = d width="350" height="250"></svg>        
+        </td>
+        <td><font color="magenta">I_TRANPARENCIA</font></td>
+    </tr>
+ </table>
+ <div>
+  <p> este es un texto</p> 
+     <p> que vamos mostrar</p>
+    
+</div>
+    
+    
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+var svg = d3.select("svg.c"),
+    margin = {top: 20, right: 10, bottom: 30, left: 30},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var parseTime = d3.timeParse("%d-%b-%y");
+var parseDate = d3.timeParse("%Y%m%d");    
+var parseTimeY = d3.timeParse("%Y")
+    bisectDate = d3.bisector(function(d) { return d.FECHA_YEAR; }).left;
+
+    
+var x = d3.scaleTime()
+    .rangeRound([0, width]);
+
+var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+var valueline = d3.line()
+    .x(function(d) { return x(d.FECHA); })
+    .y(function(d) { return y(d.promedio_nacional); });
+
+var tooltip ;
+
+
+    
+d3.json("dataigpr6.json", function(error, data) {
+    if (error) throw error;
+    data.forEach(function(d) {
+    //console.log("fecha1:",d.FECHA)
+      d.FECHA= parseTime(d.FECHA)
+      d.promedio_nacional = +d.promedio_nacional
+      d.I_TRANSPARENCIA = +d.I_TRANSPARENCIA
+      console.log("fecha:",d.FECHA,"puntaje:",d.promedio_nacional)
+    });
+    
+  x.domain(d3.extent(data, function(d) { return d.FECHA }));
+  y.domain(d3.extent(data, function(d) { return d.promedio_nacional; }));
+
+  tooltip = g.append("text")
+    .style("font-size", "8pt")
+    .style("font-family", "sans-serif")  
+    .style("color", "steelblue")
+    .attr("x", -100);
+    
+  g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    .select(".domain")
+      .remove();
+
+  g.append("g")
+      .call(d3.axisLeft(y))
+    .append("text")
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Puntaje (%)");
+    
+  g.append("path")
+      //.datum(data)
+      .data([data])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+      .attr("d", valueline);
+    
+     g.selectAll("circle")
+     .data([data]).enter()
+     .append("circle")
+     .attr("cx", function(d) { console.log("dato cx",x(d.FECHA));x(d.FECHA);})
+     .attr("cy", function(d) { console.log("dato cy",y(d.promedio_nacional)); return y(d.promedio_nacional);})
+     .attr("r", 5)
+     .style("fill", "salmon")
+     .on("mouseover", function (d) {
+        console.log(d);
+        tooltip.attr("x", x(d.FECHA))
+          .attr("y", y(d.promedio_nacional))
+          .text(`Puntaje=${d.promedio_nacional}`);
+    
+        d3.select(this)
+          .transition()
+          .duration(2000)
+          .attr("r", 10);
+      });
+     
+    
+      
+    
+    
+   
+});
+</script>
+<script>
+var svg1 = d3.select("svg.d"),
+    margin = {top: 20, right: 10, bottom: 30, left: 30},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom,
+    g1 = svg1.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var parseTime = d3.timeParse("%d-%b-%y");
+var parseTimeY = d3.timeParse("%Y")
+    bisectDate = d3.bisector(function(d) { return d.FECHA_YEAR; }).left;
+
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+    
+var x = d3.scaleTime()
+    .rangeRound([0, width]);
+
+var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+var valueline2 = d3.line()
+    .x(function(d) { return x(d.FECHA); })
+    .y(function(d) { return y(d.I_TRANSPARENCIA_PROM); });
+
+var valueline3 = d3.line()
+    .x(function(d) { return x(d.FECHA); })
+    .y(function(d) { return y(d.II_SIN_MEDIDAS_DEL_SMSCE_PROM); });
+    
+var valueline4 = d3.line()
+    .x(function(d) { return x(d.FECHA); })
+    .y(function(d) { return y(d.III_EFICIENCIA_PROM); });
+    
+var valueline5 = d3.line()
+    .x(function(d) { return x(d.FECHA); })
+    .y(function(d) { return y(d.IV_EFICACIA_PROM); });
+    
+d3.json("dataigpr6.json", function(error, data) {
+    if (error) throw error;
+    data.forEach(function(d) {
+    //console.log("fecha1:",d.FECHA)
+      d.FECHA= parseTime(d.FECHA)
+      d.promedio_nacional = +d.promedio_nacional
+      d.I_TRANSPARENCIA_PROM = +d.I_TRANSPARENCIA_PROM
+      d.II_SIN_MEDIDAS_DEL_SMSCE_PROM = +d.II_SIN_MEDIDAS_DEL_SMSCE_PROM
+      d.III_EFICIENCIA_PROM = +d.III_EFICIENCIA_PROM 
+      d.IV_EFICACIA_PROM = +d.IV_EFICACIA_PROM
+      //console.log("fecha:",d.FECHA,"puntaje:",d.promedio_nacional,"dim_I_transp:",d.I_TRANSPARENCIA_PROM, "dim_II_sinmedidas:",d.II_SIN_MEDIDAS_DEL_SMSCE_PROM,"dim_III_eficiencia:",d.III_EFICIENCIA_PROM,"dim_IV_eficacia",d.IV_EFICACIA_PROM)
+    });
+    
+  x.domain(d3.extent(data, function(d) { return d.FECHA }));
+  //y.domain(d3.extent(data, function(d) { return d.promedio_nacional; }));
+  //y.domain([0, d3.max(data, function(d) {
+  // return Math.max(d.II_SIN_MEDIDAS_DEL_SMSCE_PROM,d.I_TRANSPARENCIA_PROM); })]);
+  y.domain([10, 30]);
+
+
+  g1.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    .select(".domain")
+      .remove();
+
+  g1.append("g")
+      .call(d3.axisLeft(y))
+    .append("text")
+      .attr("fill", "#000")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", "end")
+      .text("Puntaje (%)");
+    
+  g1.append("path")
+      //.datum(data)
+      .data([data])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "magenta")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+      .attr("d", valueline2);
+    
+     g1.append("path")
+      //.datum(data)
+      .data([data])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "red")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+      .attr("d", valueline3);
+    
+     g1.append("path")
+      //.datum(data)
+      .data([data])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+      .attr("d", valueline4);
+    
+     g1.append("path")
+      //.datum(data)
+      .data([data])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "blue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+      .attr("d", valueline5);
+    
+});
+</script>
+</div>
+
+</body>
+</html>
