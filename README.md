@@ -14,6 +14,6 @@ Para ejecutar descar el index y el archivo json.
 
 Autor
 
-Martha Lucia Cárdenas Soto Link Observable https://beta.observablehq.com/@mlcardenas18/tarea-2
+Martha Lucia Cárdenas Soto Link https://github.com/mlcardenas18/TENDENCIA_IGPR
 
 Link screenshot https://raw.githubusercontent.com/mlcardenas18/TENDENCIA_IGPR/master/tendencigpr1.PNG
